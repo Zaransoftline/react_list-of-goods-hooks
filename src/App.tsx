@@ -4,6 +4,11 @@ import classNames from 'classnames';
 import 'bulma/css/bulma.css';
 import './App.scss';
 
+enum SortField {
+  alphabetically = 'Sort alphabetically',
+  length = 'Sort by length',
+}
+
 export const goodsFromServer = [
   'Dumplings',
   'Carrot',
@@ -18,17 +23,17 @@ export const goodsFromServer = [
 ];
 
 export const App: React.FC = () => {
-  const [sortType, setSortType] = useState('');
+  const [sortType, setSortType] = useState<SortField | ''>('');
   const [isReversed, setIsReversed] = useState(false);
 
   const filter = () => {
     const goods = [...goodsFromServer];
 
     switch (sortType) {
-      case 'Sort alphabetically':
+      case SortField.alphabetically:
         goods.sort((a, b) => a.localeCompare(b));
         break;
-      case 'Sort by length':
+      case SortField.length:
         goods.sort((a, b) => a.length - b.length);
         break;
       default:
@@ -47,17 +52,15 @@ export const App: React.FC = () => {
   return (
     <div className="section content">
       <div className="buttons">
-        {['Sort alphabetically', 'Sort by length'].map(method => (
+        {Object.values(SortField).map(method => (
           <button
             onClick={() => {
               setSortType(method);
             }}
             key={method}
             className={classNames('button', {
-              'is-info':
-                method === 'Sort alphabetically' && sortType === method,
-              'is-success': method === 'Sort by length' && sortType === method,
-              'is-warning': method === 'Reverse' && sortType === method,
+              'is-info': method === SortField.alphabetically && sortType === method,
+              'is-success': method === SortField.length && sortType === method,
               'is-light': sortType !== method,
             })}
           >
@@ -71,7 +74,7 @@ export const App: React.FC = () => {
             className={classNames('button is-warning', {
               'is-light': !isReversed,
             })}
-            onClick={() => setIsReversed(!isReversed)}
+            onClick={() => setIsReversed(prev => !prev)} // Keeps the current sortType
           >
             Reverse
           </button>
